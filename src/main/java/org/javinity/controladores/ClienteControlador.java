@@ -4,6 +4,8 @@ package org.javinity.controladores;
 import org.javinity.RepositorioGenerico;
 import org.javinity.modelos.Cliente;
 
+import java.util.Collection;
+
 /**
  * Controlador encargado de gestionar la lógica de negocio relacionada con los clientes.
  * Funciona como intermediario entre la vista y el repositorio de datos.
@@ -63,8 +65,17 @@ public class ClienteControlador {
     /**
      * Muestra todos los clientes registrados.
      */
-    public void mostrarClientes() {
-        clientes.mostrarTodos();
+//    public void mostrarClientes() {
+//        clientes.mostrarTodos();
+//    }
+
+    /**
+     * Devuelve una colección con todos los clientes registrados.
+     *
+     * @return Lista de clientes.
+     */
+    public Collection<Cliente> obtenerTodosLosClientes() {
+        return clientes.obtenerTodos().values();
     }
 
 }

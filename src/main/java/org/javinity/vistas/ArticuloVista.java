@@ -58,26 +58,32 @@ public class ArticuloVista {
     private void agregarArticulo() {
         try {
             System.out.print("Código del producto: ");
-            String codigo = scanner.nextLine();
+            String codigoProducto = scanner.nextLine();
 
             System.out.print("Descripción: ");
             String descripcion = scanner.nextLine();
 
             System.out.print("Precio de venta: ");
-            float precio = Float.parseFloat(scanner.nextLine());
-            if (precio < 0) throw new IllegalArgumentException("El precio no puede ser negativo.");
+            float precioVenta = Float.parseFloat(scanner.nextLine());
+            if (precioVenta < 0) throw new IllegalArgumentException("El precio no puede ser negativo.");
 
             System.out.print("Gastos de envío: ");
             float gastosEnvio = Float.parseFloat(scanner.nextLine());
             if (gastosEnvio < 0) throw new IllegalArgumentException("Los gastos de envío no pueden ser negativos.");
 
             System.out.print("Tiempo de preparación (minutos): ");
-            int tiempoPrep = Integer.parseInt(scanner.nextLine());
-            if (tiempoPrep < 0) throw new IllegalArgumentException("El tiempo de preparación no puede ser negativo.");
+            int tiempoPrepEnvio = Integer.parseInt(scanner.nextLine());
+            if (tiempoPrepEnvio < 0) throw new IllegalArgumentException("El tiempo de preparación no puede ser negativo.");
 
-            articuloControlador.agregarArticulo(codigo, new Articulo(codigo, descripcion, precio, gastosEnvio, tiempoPrep));
+            articuloControlador.agregarArticulo(codigoProducto, new Articulo(codigoProducto, descripcion, precioVenta, gastosEnvio, tiempoPrepEnvio));
         } catch (NumberFormatException e) {
             System.out.println("Error: Debes introducir un número válido.");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            System.out.println("Artículo agregado correctamente.");
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
@@ -87,7 +93,9 @@ public class ArticuloVista {
      * Llama al controlador para mostrar la lista de artículos disponibles.
      */
     private void mostrarArticulos() {
-        System.out.println("\n📜 Lista de Artículos:");
+        System.out.println("==========================================");
+        System.out.println("Lista de Artículos:");
+        System.out.println("==========================================");
         articuloControlador.mostrarArticulos();
     }
 }

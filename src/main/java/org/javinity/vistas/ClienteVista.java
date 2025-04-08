@@ -5,6 +5,7 @@ import org.javinity.modelos.Cliente;
 import org.javinity.modelos.ClienteEstandar;
 import org.javinity.modelos.ClientePremium;
 
+import java.util.Collection;
 import java.util.Scanner;
 
 
@@ -93,9 +94,27 @@ public class ClienteVista {
     /**
      * Llama al controlador para mostrar todos los clientes registrados.
      */
+//    private void mostrarClientes() {
+////        System.out.println("\n Lista de Clientes:");
+////        clienteControlador.mostrarClientes();
+////    }
+
     private void mostrarClientes() {
-        System.out.println("\n Lista de Clientes:");
-        clienteControlador.mostrarClientes();
+        System.out.println("==========================================");
+        System.out.println(" Lista de Clientes:");
+        System.out.println("==========================================");
+
+        Collection<Cliente> listaClientes = clienteControlador.obtenerTodosLosClientes();
+
+        if (listaClientes.isEmpty()) {
+            System.out.println("📭 No hay clientes registrados.");
+            return;
+        }
+
+        for (Cliente cliente : listaClientes) {
+            System.out.println(cliente);
+            System.out.println("==========================================");
+        }
     }
 
 }

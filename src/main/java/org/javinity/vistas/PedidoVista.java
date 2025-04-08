@@ -120,7 +120,9 @@ public class PedidoVista {
      * Muestra todos los pedidos almacenados.
      */
     private void mostrarTodosLosPedidos() {
-        System.out.println("\nListado de TODOS los pedidos:");
+        System.out.println("==========================================");
+        System.out.println("Listado de TODOS los pedidos:");
+        System.out.println("==========================================");
         try {
             pedidoControlador.mostrarPedidos();
         } catch (Exception e) {
