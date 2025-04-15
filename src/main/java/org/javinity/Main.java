@@ -21,7 +21,7 @@ public class Main {
 
         // Inyectar DAO al controlador
         ArticuloControlador articuloControlador = new ArticuloControlador(articuloDAO);
-        ClienteControlador clienteControlador = new ClienteControlador();
+        ClienteControlador clienteControlador = new ClienteControlador(DAOFactory.getClienteDAO());
         PedidoControlador pedidoControlador = new PedidoControlador();
 
         // Instanciar vistas con sus respectivos controladores

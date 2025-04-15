@@ -18,8 +18,8 @@ import java.util.Scanner;
  * @author Javinity
  */
 public class ClienteVista {
-    private ClienteControlador clienteControlador;
-    private Scanner scanner;
+    private final ClienteControlador clienteControlador;
+    private final Scanner scanner;
 
     /**
      * Constructor que inicializa la vista con su controlador asociado.
@@ -81,7 +81,7 @@ public class ClienteVista {
                     ? new ClientePremium(email, nombre, domicilio, nif)
                     : new ClienteEstandar(email, nombre, domicilio, nif);
 
-            clienteControlador.agregarCliente(email, cliente);
+            clienteControlador.agregarCliente(cliente);
 
             // Mensaje de confirmación
             String tipo = esPremium ? "Cliente PREMIUM" : "Cliente ESTÁNDAR";

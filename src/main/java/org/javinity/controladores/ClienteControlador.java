@@ -1,73 +1,54 @@
 package org.javinity.controladores;
 
-
-import org.javinity.RepositorioGenerico;
+import org.javinity.dao.interfaces.ClienteDAO;
+import org.javinity.excepciones.ElementoNoEncontradoException;
 import org.javinity.modelos.Cliente;
 
 import java.util.Collection;
 
 /**
  * Controlador encargado de gestionar la lógica de negocio relacionada con los clientes.
- * Funciona como intermediario entre la vista y el repositorio de datos.
- * Implementa operaciones CRUD básicas sobre clientes.
- *
- * @author Javinity
+ * Funciona como intermediario entre la vista y el acceso a base de datos mediante DAO.
  */
 public class ClienteControlador {
-    private RepositorioGenerico<Cliente> clientes;
-
+    private final ClienteDAO clienteDAO;
 
     /**
-     * Constructor que inicializa el repositorio de clientes.
+     * Constructor que recibe el DAO para acceder a los datos de clientes.
+     *
+     * @param clienteDAO DAO concreto que gestiona la persistencia.
      */
-    public ClienteControlador() {
-        this.clientes = new RepositorioGenerico<>();
+    public ClienteControlador(ClienteDAO clienteDAO) {
+        this.clienteDAO = clienteDAO;
     }
-
-
 
     /**
      * Agrega un nuevo cliente si no existe otro con el mismo email.
      *
-     * @param email   Email del cliente (clave única).
      * @param cliente Objeto cliente a agregar.
      * @throws IllegalArgumentException si ya existe un cliente con ese email.
      */
-    public void agregarCliente(String email, Cliente cliente) {
-        if (clientes.obtener(email) != null) {
-            throw new IllegalArgumentException("Ya existe un cliente con el email: " + email);
+    public void agregarCliente(Cliente cliente) {
+        if (clienteDAO.buscar(cliente.getEmail()) != null) {
+            throw new IllegalArgumentException("Ya existe un cliente con el email: " + cliente.getEmail());
         }
-        clientes.agregar(email, cliente);
+        clienteDAO.insertar(cliente);
     }
-
 
     /**
      * Devuelve el cliente correspondiente al email proporcionado.
      *
      * @param email Email del cliente.
-     * @return Cliente correspondiente, o null si no existe.
+     * @return Cliente correspondiente.
+     * @throws ElementoNoEncontradoException si no se encuentra el cliente.
      */
     public Cliente obtenerCliente(String email) {
-        return clientes.obtener(email);
+        Cliente cliente = clienteDAO.buscar(email);
+        if (cliente == null) {
+            throw new ElementoNoEncontradoException("Cliente con email " + email + " no encontrado.");
+        }
+        return cliente;
     }
-
-
-    /**
-     * Elimina un cliente dado su email.
-     *
-     * @param email Email del cliente a eliminar.
-     */
-    public void eliminarCliente(String email) {
-        clientes.eliminar(email);
-    }
-
-
-    /**
-     * Muestra todos los clientes registrados.
-     */
-//    public void mostrarClientes() {
-//        clientes.mostrarTodos();
-//    }
 
     /**
      * Devuelve una colección con todos los clientes registrados.
@@ -75,7 +56,6 @@ public class ClienteControlador {
      * @return Lista de clientes.
      */
     public Collection<Cliente> obtenerTodosLosClientes() {
-        return clientes.obtenerTodos().values();
+        return clienteDAO.listar();
     }
-
 }
