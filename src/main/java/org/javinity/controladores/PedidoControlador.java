@@ -1,6 +1,6 @@
 package org.javinity.controladores;
 
-import org.javinity.RepositorioGenerico;
+import org.javinity.dao.interfaces.PedidoDAO;
 import org.javinity.excepciones.ElementoNoEncontradoException;
 import org.javinity.excepciones.PedidoNoEliminableException;
 import org.javinity.modelos.Pedido;
@@ -10,118 +10,103 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Controlador responsable de la lógica de negocio relacionada con pedidos.
+ * Controlador responsable de la lógica de negocio relacionada con los pedidos.
  * Permite agregar, eliminar, mostrar y filtrar pedidos según su estado o cliente.
+ * Aplica reglas de negocio como la validación del tiempo de preparación para permitir su eliminación.
  *
- * Implementa validaciones de envío basadas en la fecha y tiempo de preparación.
+ * Forma parte de la capa de control del patrón MVC.
+ * Utiliza una interfaz PedidoDAO para realizar operaciones sobre la base de datos.
  *
  * @author Javinity
  */
 public class PedidoControlador {
 
-    private RepositorioGenerico<Pedido> pedidos;
+    private final PedidoDAO pedidoDAO;
 
     /**
-     * Constructor que inicializa el repositorio de pedidos.
-     */
-    public PedidoControlador() {
-        this.pedidos = new RepositorioGenerico<>();
-    }
-
-    /**
-     * Agrega un nuevo pedido al sistema.
+     * Constructor que recibe una implementación de PedidoDAO.
      *
-     * @param numPedido Número identificador del pedido.
-     * @param pedido    Objeto pedido a agregar.
+     * @param pedidoDAO Implementación concreta del acceso a datos de pedidos.
      */
-    public void agregarPedido(int numPedido, Pedido pedido) {
-        pedidos.agregar(String.valueOf(numPedido), pedido);
+    public PedidoControlador(PedidoDAO pedidoDAO) {
+        this.pedidoDAO = pedidoDAO;
     }
 
     /**
-     * Obtiene un pedido por su número.
+     * Agrega un nuevo pedido a la base de datos.
      *
-     * @param numPedido Número del pedido.
-     * @return Pedido correspondiente.
-     * @throws ElementoNoEncontradoException si no se encuentra el pedido.
+     * @param pedido Pedido a agregar.
      */
-    public Pedido obtenerPedido(int numPedido) {
-        Pedido pedido = pedidos.obtener(String.valueOf(numPedido));
-        if (pedido == null) {
-            throw new ElementoNoEncontradoException("Pedido con número " + numPedido + " no encontrado.");
-        }
-        return pedido;
+    public void agregarPedido(Pedido pedido) {
+        pedidoDAO.insertar(pedido);
     }
 
     /**
-     * Elimina un pedido si aún no ha sido enviado.
+     * Elimina un pedido si aún no ha sido enviado (según el tiempo de preparación).
      *
      * @param numPedido Número del pedido a eliminar.
-     * @throws ElementoNoEncontradoException si no existe el pedido.
-     * @throws PedidoNoEliminableException   si el pedido ya fue enviado.
+     * @throws ElementoNoEncontradoException Si el pedido no existe.
+     * @throws PedidoNoEliminableException Si el pedido ya fue enviado.
      */
     public void eliminarPedido(int numPedido) {
-        Pedido pedido = pedidos.obtener(String.valueOf(numPedido));
+        Pedido pedido = pedidoDAO.buscar(numPedido);
         if (pedido == null) {
-            throw new ElementoNoEncontradoException("No se puede eliminar. Pedido con número " + numPedido + " no encontrado.");
+            throw new ElementoNoEncontradoException("Pedido no encontrado.");
         }
 
-        LocalDateTime tiempoLimite = pedido.getFechaHoraPedido().plusMinutes(pedido.getArticulo().getTiempoPrepEnvio());
+        LocalDateTime tiempoLimite = pedido.getFechaHoraPedido()
+                .plusMinutes(pedido.getArticulo().getTiempoPrepEnvio());
+
         if (LocalDateTime.now().isAfter(tiempoLimite)) {
-            throw new PedidoNoEliminableException("No se puede eliminar. El pedido ya fue enviado.");
+            throw new PedidoNoEliminableException("El pedido ya fue enviado y no puede eliminarse.");
         }
 
-        pedidos.eliminar(String.valueOf(numPedido));
+        pedidoDAO.eliminar(numPedido);
     }
 
     /**
-     * Muestra todos los pedidos registrados en el sistema.
-     * Si no hay pedidos, muestra un mensaje informativo.
-     */
-    public void mostrarPedidos() {
-        if (pedidos.contarElementos() == 0) {
-            System.out.println("No hay pedidos registrados.");
-        } else {
-            pedidos.obtenerTodos().values().forEach(System.out::println);
-        }
-    }
-
-    /**
-     * Devuelve el número total de pedidos registrados.
+     * Recupera todos los pedidos registrados en la base de datos.
      *
-     * @return Número de pedidos.
+     * @return Lista completa de pedidos.
+     */
+    public List<Pedido> obtenerTodosLosPedidos() {
+        return pedidoDAO.listar();
+    }
+
+    /**
+     * Devuelve la cantidad total de pedidos registrados.
+     *
+     * @return Número total de pedidos.
      */
     public int contarPedidos() {
-        return pedidos.contarElementos();
+        return pedidoDAO.listar().size();
     }
 
     /**
-     * Devuelve una lista de pedidos pendientes de un cliente específico.
-     * Un pedido se considera pendiente si aún no ha pasado su tiempo de preparación.
+     * Devuelve los pedidos pendientes (no enviados) de un cliente específico.
      *
      * @param emailCliente Email del cliente.
      * @return Lista de pedidos pendientes.
      */
     public List<Pedido> obtenerPedidosPendientesPorCliente(String emailCliente) {
-        return pedidos.obtenerTodos().values().stream()
-                .filter(pedido -> pedido.getCliente().getEmail().equals(emailCliente))
-                .filter(pedido -> LocalDateTime.now().isBefore(
-                        pedido.getFechaHoraPedido().plusMinutes(pedido.getArticulo().getTiempoPrepEnvio())))
+        return pedidoDAO.listar().stream()
+                .filter(p -> p.getCliente().getEmail().equalsIgnoreCase(emailCliente))
+                .filter(p -> LocalDateTime.now().isBefore(
+                        p.getFechaHoraPedido().plusMinutes(p.getArticulo().getTiempoPrepEnvio())))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Devuelve una lista de pedidos enviados de un cliente específico.
-     * Un pedido se considera enviado si ya ha pasado su tiempo de preparación.
+     * Devuelve los pedidos ya enviados de un cliente específico.
      *
      * @param emailCliente Email del cliente.
      * @return Lista de pedidos enviados.
      */
     public List<Pedido> obtenerPedidosEnviadosPorCliente(String emailCliente) {
-        return pedidos.obtenerTodos().values().stream()
-                .filter(pedido -> pedido.getCliente().getEmail().equals(emailCliente))
-                .filter(pedido -> LocalDateTime.now().isAfter(
-                        pedido.getFechaHoraPedido().plusMinutes(pedido.getArticulo().getTiempoPrepEnvio())))
+        return pedidoDAO.listar().stream()
+                .filter(p -> p.getCliente().getEmail().equalsIgnoreCase(emailCliente))
+                .filter(p -> LocalDateTime.now().isAfter(
+                        p.getFechaHoraPedido().plusMinutes(p.getArticulo().getTiempoPrepEnvio())))
                 .collect(Collectors.toList());
     }
 }

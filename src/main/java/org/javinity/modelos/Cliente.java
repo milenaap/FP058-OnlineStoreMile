@@ -25,6 +25,16 @@ public abstract class Cliente {
         this.pedidos = new ArrayList<>();
     }
 
+    public Cliente(String email) {
+        this.email = email;
+        this.nombre = "";
+        this.domicilio = "";
+        this.nif = "";
+    }
+
+
+
+
     public String getEmail() {
         return email;
     }

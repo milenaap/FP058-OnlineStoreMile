@@ -3,14 +3,48 @@ package org.javinity.modelos;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Clase que representa un pedido realizado en la tienda online.
+ * Contiene la información del cliente, artículo solicitado, cantidad, fecha y número de pedido.
+ *
+ * Se utiliza tanto para registrar nuevos pedidos como para recuperar pedidos desde la base de datos.
+ *
+ * Forma parte del modelo del proyecto (patrón MVC).
+ *
+ * @author Javinity
+ */
 public class Pedido {
 
-    private int numPedido; // Identificador del pedido
+    private int numPedido; // Identificador único del pedido (PK)
     private Cliente cliente; // Cliente que realiza el pedido
     private Articulo articulo; // Artículo solicitado
-    private int cantidad; // Número de unidades
-    private LocalDateTime fechaHoraPedido; // Fecha y hora del pedido
+    private int cantidad; // Número de unidades pedidas
+    private LocalDateTime fechaHoraPedido; // Fecha y hora en que se realiza el pedido
 
+    /**
+     * Constructor para insertar un nuevo pedido (sin número aún asignado).
+     *
+     * @param cliente Cliente que realiza el pedido
+     * @param articulo Artículo solicitado
+     * @param cantidad Cantidad solicitada
+     * @param fechaHoraPedido Fecha y hora del pedido
+     */
+    public Pedido(Cliente cliente, Articulo articulo, int cantidad, LocalDateTime fechaHoraPedido) {
+        this.cliente = cliente;
+        this.articulo = articulo;
+        this.cantidad = cantidad;
+        this.fechaHoraPedido = fechaHoraPedido;
+    }
+
+    /**
+     * Constructor para recuperar un pedido desde la base de datos (ya tiene numPedido asignado).
+     *
+     * @param numPedido Número del pedido (clave primaria)
+     * @param cliente Cliente que realizó el pedido
+     * @param articulo Artículo solicitado
+     * @param cantidad Cantidad pedida
+     * @param fechaHoraPedido Fecha y hora del pedido
+     */
     public Pedido(int numPedido, Cliente cliente, Articulo articulo, int cantidad, LocalDateTime fechaHoraPedido) {
         this.numPedido = numPedido;
         this.cliente = cliente;
@@ -60,9 +94,9 @@ public class Pedido {
     }
 
     /**
-     * Devuelve una representación en texto del pedido con sus datos clave.
+     * Devuelve una representación legible del pedido con sus datos principales.
      *
-     * @return Información del pedido como cadena.
+     * @return Texto con los datos del pedido.
      */
     @Override
     public String toString() {

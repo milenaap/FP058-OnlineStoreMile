@@ -1,29 +1,30 @@
 import org.javinity.controladores.ArticuloControlador;
+import org.javinity.dao.factory.DAOFactory;
 import org.javinity.modelos.Articulo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ArticuloControladorTest {
 
     private ArticuloControlador articuloControlador;
 
-//    @BeforeEach
-//    void setUp() {
-//        articuloControlador = new ArticuloControlador();
-//    }
-//
-//    @Test
-//    void testAgregarArticulo() {
-//        Articulo articulo = new Articulo("A001", "Laptop HP", 800.0f, 20.0f, 30);
-//        articuloControlador.agregarArticulo(articulo);
-//
-//        // Verificar que el artículo fue agregado correctamente
-//        Articulo articuloObtenido = articuloControlador.obtenerArticulo("A001");
-//        assertNotNull(articuloObtenido, "El artículo no debería ser nulo.");
-//        assertEquals("Laptop HP", articuloObtenido.getDescripcion(), "La descripción del artículo no coincide.");
-//        assertEquals(800.0f, articuloObtenido.getPrecioVenta(), "El precio del artículo no coincide.");
-//    }
+    @BeforeEach
+    void setUp() {
+        articuloControlador = new ArticuloControlador(DAOFactory.getArticuloDAO());
+    }
+
+    @Test
+    void testAgregarArticulo() {
+        Articulo articulo = new Articulo("TEST-001", "Test producto", 99.99f, 10.0f, 15);
+        articuloControlador.agregarArticulo(articulo);
+
+        Articulo articuloObtenido = articuloControlador.obtenerArticulo("TEST-001");
+
+        assertNotNull(articuloObtenido);
+        assertEquals("Test producto", articuloObtenido.getDescripcion());
+        assertEquals(99.99f, articuloObtenido.getPrecioVenta());
+    }
 }
+

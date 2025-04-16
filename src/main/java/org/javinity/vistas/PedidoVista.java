@@ -5,39 +5,29 @@ import org.javinity.controladores.ClienteControlador;
 import org.javinity.controladores.PedidoControlador;
 import org.javinity.excepciones.ElementoNoEncontradoException;
 import org.javinity.excepciones.PedidoNoEliminableException;
-import org.javinity.modelos.Articulo;
-import org.javinity.modelos.Cliente;
-import org.javinity.modelos.Pedido;
+import org.javinity.modelos.*;
 
 import java.time.LocalDateTime;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 /**
- * Vista encargada de gestionar la interacción por consola
- * relacionada con los pedidos.
- * Permite crear, eliminar y visualizar pedidos según diferentes criterios.
- *
- * Forma parte del patrón MVC y actúa como interfaz del usuario.
+ * Vista encargada de gestionar la interacción por consola relacionada con los pedidos.
+ * Permite agregar, eliminar, mostrar y filtrar pedidos por estado o cliente.
+ * Forma parte del patrón MVC (capa vista).
  *
  * @author Javinity
  */
 public class PedidoVista {
 
-    private PedidoControlador pedidoControlador;
-    private ClienteControlador clienteControlador;
-    private ArticuloControlador articuloControlador;
-    private Scanner scanner;
+    private final PedidoControlador pedidoControlador;
+    private final ClienteControlador clienteControlador;
+    private final ArticuloControlador articuloControlador;
+    private final Scanner scanner;
 
-    /**
-     * Constructor que inicializa la vista de pedidos con los controladores necesarios.
-     *
-     * @param pedidoControlador   Controlador de pedidos.
-     * @param clienteControlador  Controlador de clientes.
-     * @param articuloControlador Controlador de artículos.
-     */
-    public PedidoVista(PedidoControlador pedidoControlador, ClienteControlador clienteControlador, ArticuloControlador articuloControlador) {
+    public PedidoVista(PedidoControlador pedidoControlador,
+                       ClienteControlador clienteControlador,
+                       ArticuloControlador articuloControlador) {
         this.pedidoControlador = pedidoControlador;
         this.clienteControlador = clienteControlador;
         this.articuloControlador = articuloControlador;
@@ -45,11 +35,10 @@ public class PedidoVista {
     }
 
     /**
-     * Muestra el menú principal de gestión de pedidos y permite al usuario
-     * navegar entre las diferentes opciones.
+     * Muestra el menú principal para la gestión de pedidos.
      */
     public void mostrarMenu() {
-        int opcion;
+        int opcion = 0;
         do {
             System.out.println("\nGestión de Pedidos");
             System.out.println("1. Añadir Pedido");
@@ -61,9 +50,7 @@ public class PedidoVista {
             System.out.print("Selecciona una opción: ");
 
             try {
-                opcion = scanner.nextInt();
-                scanner.nextLine(); // Limpiar buffer
-
+                opcion = Integer.parseInt(scanner.nextLine());
                 switch (opcion) {
                     case 1 -> agregarPedido();
                     case 2 -> eliminarPedido();
@@ -71,108 +58,125 @@ public class PedidoVista {
                     case 4 -> mostrarPedidosPendientesPorCliente();
                     case 5 -> mostrarPedidosEnviadosPorCliente();
                     case 6 -> System.out.println("Volviendo al menú principal...");
-                    default -> System.out.println("Opción no válida, intenta de nuevo.");
+                    default -> System.out.println("Opción no válida.");
                 }
-            } catch (InputMismatchException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Error: Ingresa un número válido.");
-                scanner.nextLine(); // Limpiar buffer
-                opcion = -1;
             }
-
         } while (opcion != 6);
     }
 
     /**
-     * Solicita los datos para registrar un nuevo pedido y lo envía al controlador.
+     * Permite agregar un nuevo pedido y registrar al cliente si no existe.
      */
     private void agregarPedido() {
-        System.out.print("Email del cliente: ");
-        Cliente cliente = clienteControlador.obtenerCliente(scanner.nextLine());
-        if (cliente == null) {
-            System.out.println("Cliente no encontrado.");
-            return;
-        }
-
-        System.out.print("Código del artículo: ");
-        Articulo articulo = articuloControlador.obtenerArticulo(scanner.nextLine());
-        if (articulo == null) {
-            System.out.println("Artículo no encontrado.");
-            return;
-        }
-
-        System.out.print("Cantidad: ");
-        int cantidad = scanner.nextInt();
-        scanner.nextLine();
-
-        if (cantidad <= 0) {
-            System.out.println("La cantidad debe ser mayor a 0.");
-            return;
-        }
-
-        int nuevoNumeroPedido = pedidoControlador.contarPedidos() + 1;
-        Pedido pedido = new Pedido(nuevoNumeroPedido, cliente, articulo, cantidad, LocalDateTime.now());
-        pedidoControlador.agregarPedido(nuevoNumeroPedido, pedido);
-
-        System.out.println("Pedido agregado con éxito.");
-    }
-
-    /**
-     * Muestra todos los pedidos almacenados.
-     */
-    private void mostrarTodosLosPedidos() {
-        System.out.println("==========================================");
-        System.out.println("Listado de TODOS los pedidos:");
-        System.out.println("==========================================");
         try {
-            pedidoControlador.mostrarPedidos();
+            System.out.print("Email del cliente: ");
+            String email = scanner.nextLine();
+            Cliente cliente = clienteControlador.obtenerCliente(email);
+
+            if (cliente == null) {
+                System.out.println("Cliente no encontrado. Vamos a registrarlo.");
+                System.out.print("Nombre: ");
+                String nombre = scanner.nextLine();
+                System.out.print("Domicilio: ");
+                String domicilio = scanner.nextLine();
+                System.out.print("NIF: ");
+                String nif = scanner.nextLine();
+                System.out.print("¿Tipo de cliente (1. Estándar | 2. Premium)?: ");
+                int tipo = Integer.parseInt(scanner.nextLine());
+
+                cliente = (tipo == 2)
+                        ? new ClientePremium(email, nombre, domicilio, nif)
+                        : new ClienteEstandar(email, nombre, domicilio, nif);
+
+                clienteControlador.agregarCliente(cliente);
+                System.out.println("Cliente registrado correctamente.");
+            }
+
+            System.out.print("Código del artículo: ");
+            String codigo = scanner.nextLine();
+            Articulo articulo = articuloControlador.obtenerArticulo(codigo);
+
+            if (articulo == null) {
+                System.out.println("Artículo no encontrado. No se puede crear el pedido.");
+                return;
+            }
+
+            System.out.print("Cantidad: ");
+            int cantidad = Integer.parseInt(scanner.nextLine());
+            if (cantidad <= 0) {
+                System.out.println("La cantidad debe ser mayor que cero.");
+                return;
+            }
+
+            Pedido nuevoPedido = new Pedido(0, cliente, articulo, cantidad, LocalDateTime.now());
+            pedidoControlador.agregarPedido(nuevoPedido);
+            System.out.println("Pedido agregado correctamente.");
         } catch (Exception e) {
-            System.out.println("Error al mostrar los pedidos: " + e.getMessage());
+            System.out.println("Error al agregar el pedido: " + e.getMessage());
         }
     }
 
     /**
-     * Solicita un email y muestra todos los pedidos pendientes del cliente.
-     */
-    private void mostrarPedidosPendientesPorCliente() {
-        System.out.print("Ingrese el email del cliente: ");
-        String email = scanner.nextLine();
-        List<Pedido> pedidosPendientes = pedidoControlador.obtenerPedidosPendientesPorCliente(email);
-
-        if (pedidosPendientes.isEmpty()) {
-            System.out.println("No hay pedidos pendientes para este cliente.");
-        } else {
-            pedidosPendientes.forEach(System.out::println);
-        }
-    }
-
-    /**
-     * Solicita un email y muestra todos los pedidos enviados del cliente.
-     */
-    private void mostrarPedidosEnviadosPorCliente() {
-        System.out.print("Ingrese el email del cliente: ");
-        String email = scanner.nextLine();
-        List<Pedido> pedidosEnviados = pedidoControlador.obtenerPedidosEnviadosPorCliente(email);
-
-        if (pedidosEnviados.isEmpty()) {
-            System.out.println("No hay pedidos enviados para este cliente.");
-        } else {
-            pedidosEnviados.forEach(System.out::println);
-        }
-    }
-
-    /**
-     * Solicita un número de pedido y lo elimina si es válido.
+     * Elimina un pedido si cumple la condición de no haber sido enviado.
      */
     private void eliminarPedido() {
-        System.out.print("Ingrese el número del pedido a eliminar: ");
-        int numPedido = scanner.nextInt();
-        scanner.nextLine();
-
         try {
+            System.out.print("Número del pedido a eliminar: ");
+            int numPedido = Integer.parseInt(scanner.nextLine());
             pedidoControlador.eliminarPedido(numPedido);
-            System.out.println("Pedido eliminado con éxito.");
+            System.out.println("Pedido eliminado correctamente.");
         } catch (ElementoNoEncontradoException | PedidoNoEliminableException e) {
             System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Muestra todos los pedidos registrados.
+     */
+    private void mostrarTodosLosPedidos() {
+        System.out.println("Lista de TODOS los pedidos:");
+        List<Pedido> pedidos = pedidoControlador.obtenerTodosLosPedidos();
+
+        if (pedidos.isEmpty()) {
+            System.out.println("No hay pedidos registrados.");
+        } else {
+            pedidos.forEach(System.out::println);
+        }
+    }
+
+    /**
+     * Muestra los pedidos pendientes de envío filtrados por cliente.
+     */
+    private void mostrarPedidosPendientesPorCliente() {
+        System.out.print("Email del cliente: ");
+        String email = scanner.nextLine();
+        List<Pedido> pendientes = pedidoControlador.obtenerPedidosPendientesPorCliente(email);
+
+        if (pendientes.isEmpty()) {
+            System.out.println("No hay pedidos pendientes para este cliente.");
+        } else {
+            System.out.println("Pedidos pendientes:");
+            pendientes.forEach(System.out::println);
+        }
+    }
+
+    /**
+     * Muestra los pedidos ya enviados filtrados por cliente.
+     */
+    private void mostrarPedidosEnviadosPorCliente() {
+        System.out.print("Email del cliente: ");
+        String email = scanner.nextLine();
+        List<Pedido> enviados = pedidoControlador.obtenerPedidosEnviadosPorCliente(email);
+
+        if (enviados.isEmpty()) {
+            System.out.println("No hay pedidos enviados para este cliente.");
+        } else {
+            System.out.println("Pedidos enviados:");
+            enviados.forEach(System.out::println);
         }
     }
 }

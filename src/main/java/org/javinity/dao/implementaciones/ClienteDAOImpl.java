@@ -13,10 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementación de ClienteDAO usando JDBC para conexión con MySQL.
+ * Implementación concreta del DAO de clientes usando JDBC para la gestión con MySQL.
  */
 public class ClienteDAOImpl implements ClienteDAO {
 
+    /**
+     * Inserta un cliente en la base de datos.
+     *
+     * @param cliente El cliente a insertar.
+     */
     @Override
     public void insertar(Cliente cliente) {
         String sql = "INSERT INTO clientes (email, nombre, domicilio, nif, tipo) VALUES (?, ?, ?, ?, ?)";
@@ -37,6 +42,12 @@ public class ClienteDAOImpl implements ClienteDAO {
         }
     }
 
+    /**
+     * Busca un cliente por su email.
+     *
+     * @param email Email del cliente.
+     * @return Objeto Cliente si se encuentra, null si no existe.
+     */
     @Override
     public Cliente buscar(String email) {
         String sql = "SELECT * FROM clientes WHERE email = ?";
@@ -54,11 +65,7 @@ public class ClienteDAOImpl implements ClienteDAO {
                 String nif = rs.getString("nif");
                 String tipo = rs.getString("tipo");
 
-                if ("premium".equalsIgnoreCase(tipo)) {
-                    cliente = new ClientePremium(email, nombre, domicilio, nif);
-                } else {
-                    cliente = new ClienteEstandar(email, nombre, domicilio, nif);
-                }
+                cliente = construirCliente(email, nombre, domicilio, nif, tipo);
             }
 
         } catch (Exception e) {
@@ -68,6 +75,11 @@ public class ClienteDAOImpl implements ClienteDAO {
         return cliente;
     }
 
+    /**
+     * Lista todos los clientes registrados.
+     *
+     * @return Lista de clientes.
+     */
     @Override
     public List<Cliente> listar() {
         List<Cliente> clientes = new ArrayList<>();
@@ -84,10 +96,7 @@ public class ClienteDAOImpl implements ClienteDAO {
                 String nif = rs.getString("nif");
                 String tipo = rs.getString("tipo");
 
-                Cliente cliente = "premium".equalsIgnoreCase(tipo)
-                        ? new ClientePremium(email, nombre, domicilio, nif)
-                        : new ClienteEstandar(email, nombre, domicilio, nif);
-
+                Cliente cliente = construirCliente(email, nombre, domicilio, nif, tipo);
                 clientes.add(cliente);
             }
 
@@ -98,4 +107,19 @@ public class ClienteDAOImpl implements ClienteDAO {
         return clientes;
     }
 
+    /**
+     * Crea un objeto Cliente concreto a partir del tipo.
+     *
+     * @param email     Email del cliente.
+     * @param nombre    Nombre del cliente.
+     * @param domicilio Domicilio del cliente.
+     * @param nif       NIF del cliente.
+     * @param tipo      Tipo de cliente ("premium" o "estandar").
+     * @return Instancia de ClientePremium o ClienteEstandar.
+     */
+    private Cliente construirCliente(String email, String nombre, String domicilio, String nif, String tipo) {
+        return "premium".equalsIgnoreCase(tipo)
+                ? new ClientePremium(email, nombre, domicilio, nif)
+                : new ClienteEstandar(email, nombre, domicilio, nif);
+    }
 }

@@ -16,6 +16,10 @@ public class Articulo {
         this.tiempoPrepEnvio = tiempoPrepEnvio;
     }
 
+    public Articulo(String codigoProducto) {
+        this.codigoProducto = codigoProducto;
+    }
+
     public String getCodigoProducto() {
         return codigoProducto;
     }

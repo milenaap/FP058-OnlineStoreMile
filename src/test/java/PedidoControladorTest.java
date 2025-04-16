@@ -1,34 +1,42 @@
 import org.javinity.controladores.PedidoControlador;
-import org.javinity.modelos.Articulo;
-import org.javinity.modelos.Cliente;
-import org.javinity.modelos.ClienteEstandar;
-import org.javinity.modelos.Pedido;
+import org.javinity.dao.factory.DAOFactory;
+import org.javinity.modelos.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PedidoControladorTest {
-//    private PedidoControlador pedidoControlador;
-//    private Cliente cliente;
-//    private Articulo articulo;
-//
-//    @BeforeEach
-//    void setUp() {
-//        pedidoControlador = new PedidoControlador();
-//        cliente = new ClienteEstandar("cliente@email.com", "Juan Pérez", "Calle 123", "12345678X");
-//        articulo = new Articulo("A002", "Smartphone", 500.0f, 10.0f, 20);
-//    }
-//
-//    @Test
-//    void testContarPedidos() {
-//        assertEquals(0, pedidoControlador.contarPedidos(), "Debería haber 0 pedidos al inicio.");
-//
-//        Pedido pedido1 = new Pedido(1, cliente, articulo, 2, LocalDateTime.now());
-//        pedidoControlador.agregarPedido(1, pedido1);
-//
-//        assertEquals(1, pedidoControlador.contarPedidos(), "Después de agregar 1 pedido, debería haber 1.");
-//    }
+
+    private PedidoControlador pedidoControlador;
+    private Cliente cliente;
+    private Articulo articulo;
+
+    @BeforeEach
+    void setUp() {
+        // Usamos DAOs reales con conexión a la BD
+        pedidoControlador = new PedidoControlador(DAOFactory.getPedidoDAO());
+
+        // Creamos un cliente y un artículo para usar en el pedido
+        cliente = new ClienteEstandar("testcliente@email.com", "Test Cliente", "Calle Falsa 123", "00000000T");
+        DAOFactory.getClienteDAO().insertar(cliente);
+
+        articulo = new Articulo("TEST-A002", "Artículo Test", 99.99f, 5.0f, 5);
+        DAOFactory.getArticuloDAO().insertar(articulo);
+    }
+
+    @Test
+    void testContarPedidos() {
+        int pedidosIniciales = pedidoControlador.contarPedidos();
+
+        Pedido pedido = new Pedido(cliente, articulo, 2, LocalDateTime.now());
+        pedidoControlador.agregarPedido(pedido);
+
+        int pedidosActuales = pedidoControlador.contarPedidos();
+
+        assertEquals(pedidosIniciales + 1, pedidosActuales,
+                "El número de pedidos debería haber aumentado en 1.");
+    }
 }

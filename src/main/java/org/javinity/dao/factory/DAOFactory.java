@@ -2,31 +2,41 @@ package org.javinity.dao.factory;
 
 import org.javinity.dao.implementaciones.ArticuloDAOImpl;
 import org.javinity.dao.implementaciones.ClienteDAOImpl;
+import org.javinity.dao.implementaciones.PedidoDAOImpl;
 import org.javinity.dao.interfaces.ArticuloDAO;
 import org.javinity.dao.interfaces.ClienteDAO;
+import org.javinity.dao.interfaces.PedidoDAO;
 
 /**
- * Clase Factory que se encarga de instanciar los DAOs del sistema.
- * Permite desacoplar la lógica de negocio de la implementación concreta de acceso a datos.
+ * Fábrica de DAOs: proporciona instancias de acceso a datos desacopladas.
  */
 public class DAOFactory {
 
     /**
-     * Devuelve una implementación concreta del DAO de Artículo.
+     * Devuelve una implementación concreta del DAO de artículos.
      *
-     * @return una instancia de ArticuloDAO
+     * @return ArticuloDAO
      */
     public static ArticuloDAO getArticuloDAO() {
         return new ArticuloDAOImpl();
     }
 
     /**
-     * Devuelve una implementación concreta de ClienteDAO.
+     * Devuelve una implementación concreta del DAO de clientes.
+     *
+     * @return ClienteDAO
      */
-     public static ClienteDAO getClienteDAO() {
+    public static ClienteDAO getClienteDAO() {
         return new ClienteDAOImpl();
     }
 
-    // Aquí puedes añadir más métodos como estos para PedidoDAO cuando estén listos:
-    // public static PedidoDAO getPedidoDAO() { return new PedidoDAOImpl(); }
+    /**
+     * Devuelve una implementación concreta del DAO de pedidos.
+     * Requiere instancias de ClienteDAO y ArticuloDAO como dependencias.
+     *
+     * @return PedidoDAO
+     */
+    public static PedidoDAO getPedidoDAO() {
+        return new PedidoDAOImpl(getClienteDAO(), getArticuloDAO());
+    }
 }
