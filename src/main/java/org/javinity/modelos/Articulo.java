@@ -1,12 +1,34 @@
 package org.javinity.modelos;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 
+/**
+ * Entidad JPA que representa un artículo en la tienda online.
+ * @author Javinity
+ */
+
+@Entity
+@Table(name = "articulos")
 public class Articulo {
 
+    @Id
+    @Column(name = "codigo_producto")
     private String codigoProducto;
+
     private String descripcion;
+
+    @Column(name = "precio_venta")
     private float precioVenta;
+
+    @Column(name = "gastos_envio")
     private float gastosEnvio;
-    private int tiempoPrepEnvio;
+
+    @Column(name = "tiempo_prep_envio")
+    private int tiempoPrepEnvio;;
+
+    public Articulo() {}
 
     public Articulo(String codigoProducto, String descripcion, float precioVenta, float gastosEnvio, int tiempoPrepEnvio) {
         this.codigoProducto = codigoProducto;

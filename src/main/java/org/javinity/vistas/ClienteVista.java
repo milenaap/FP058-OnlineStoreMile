@@ -94,11 +94,7 @@ public class ClienteVista {
     /**
      * Llama al controlador para mostrar todos los clientes registrados.
      */
-//    private void mostrarClientes() {
-////        System.out.println("\n Lista de Clientes:");
-////        clienteControlador.mostrarClientes();
-////    }
-
+ 
     private void mostrarClientes() {
         System.out.println("==========================================");
         System.out.println(" Lista de Clientes:");

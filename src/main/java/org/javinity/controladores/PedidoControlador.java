@@ -1,6 +1,6 @@
 package org.javinity.controladores;
 
-import org.javinity.dao.interfaces.PedidoDAO;
+import org.javinity.dao.PedidoDAOImpl;
 import org.javinity.excepciones.ElementoNoEncontradoException;
 import org.javinity.excepciones.PedidoNoEliminableException;
 import org.javinity.modelos.Pedido;
@@ -15,20 +15,18 @@ import java.util.stream.Collectors;
  * Aplica reglas de negocio como la validación del tiempo de preparación para permitir su eliminación.
  *
  * Forma parte de la capa de control del patrón MVC.
- * Utiliza una interfaz PedidoDAO para realizar operaciones sobre la base de datos.
- *
- * @author Javinity
+ * Utiliza directamente PedidoDAOImpl sin interfaz.
  */
 public class PedidoControlador {
 
-    private final PedidoDAO pedidoDAO;
+    private final PedidoDAOImpl pedidoDAO;
 
     /**
-     * Constructor que recibe una implementación de PedidoDAO.
+     * Constructor que recibe la implementación concreta del DAO de pedidos.
      *
-     * @param pedidoDAO Implementación concreta del acceso a datos de pedidos.
+     * @param pedidoDAO Objeto que gestiona la persistencia de pedidos.
      */
-    public PedidoControlador(PedidoDAO pedidoDAO) {
+    public PedidoControlador(PedidoDAOImpl pedidoDAO) {
         this.pedidoDAO = pedidoDAO;
     }
 

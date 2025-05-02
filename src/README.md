@@ -1,64 +1,116 @@
-# OnlineStore - Grupo Nº10 - Javinity - Proyecto POO con Persistencia en MySQL
 
-Este proyecto es una aplicación de consola desarrollada en Java que gestiona una tienda online. Incluye funcionalidades para registrar y administrar clientes, artículos y pedidos.
+# 🛒 OnlineStore - Javinity (POO + JPA + Hibernate)
+
+Este proyecto es una aplicación de consola desarrollada en Java que gestiona una tienda online. Permite registrar y administrar clientes, artículos y pedidos, utilizando persistencia en base de datos con **JPA** e implementación con **Hibernate ORM**.
+
+---
 
 ## ✅ Características implementadas
 
-- Persistencia de datos en base de datos MySQL mediante JDBC
-- Uso del patrón DAO para separar la lógica de acceso a datos
-- Patrón Factory para instanciación desacoplada de DAOs
-- CRUD completo para Artículos y Clientes
-- Gestión de Pedidos:
-    - Añadir pedido (con registro automático de cliente si no existe)
-    - Eliminar pedido (solo si no ha sido enviado)
-    - Listado de pedidos
-    - Filtrado de pedidos pendientes y enviados por cliente
-- Procedimiento almacenado `sp_insertar_pedido` en MySQL
-- Manejo de excepciones específicas: `ElementoNoEncontradoException`, `PedidoNoEliminableException`
-- Estructura organizada en paquetes: modelos, controladores, vistas, dao
+- Persistencia de datos en base de datos **MySQL** mediante **JPA (Jakarta Persistence API)** y **Hibernate ORM**
+- Uso del **patrón DAO** desacoplado para la lógica de acceso a datos
+- CRUD completo para **Artículos** y **Clientes**
+- Gestión de **Pedidos**:
+  - Añadir pedido (con registro automático de cliente si no existe)
+  - Eliminar pedido (solo si aún no ha sido enviado)
+  - Listado general de pedidos
+  - Filtrado de pedidos **pendientes** y **enviados** por cliente
+- Manejo de excepciones personalizadas:
+  - `ElementoNoEncontradoException`
+  - `PedidoNoEliminableException`
+- Estructura basada en el patrón **MVC** con paquetes organizados:
+  - modelos, controladores, vistas, dao, excepciones
 
-## 🛠 Requisitos
+---
 
-- Java 17 o superior
-- MySQL Server
-- Driver JDBC para MySQL
-- IDE recomendado: IntelliJ
+## 🧱 Tecnologías utilizadas
+
+| Herramienta         | Versión    |
+|---------------------|------------|
+| Java                | 23         |
+| Hibernate ORM       | 6.4.4.Final|
+| Jakarta Persistence | 3.1.0      |
+| MySQL Connector/J   | 8.0.33     |
+| IntelliJ IDEA       | (recomendado) |
+
+---
 
 ## 🗂 Estructura del proyecto
 
-- `modelos/` → Clases de dominio (`Cliente`, `Articulo`, `Pedido`, etc.)
-- `dao/interfaces/` → Interfaces DAO
-- `dao/implementaciones/` → Clases DAO con JDBC
-- `dao/factory/` → `DAOFactory` para inyectar dependencias
-- `controladores/` → Lógica de negocio
-- `vistas/` → Interfaz por consola (menús)
-- `DatabaseConnection.java` → Clase para manejar la conexión JDBC
-- `Main.java` → Punto de entrada del programa
+```
+src/
+└── main/
+    └── java/
+        └── org/javinity/
+            ├── controladores/     --> Lógica de negocio
+            ├── dao/               --> DAOs implementados con JPA
+            ├── excepciones/       --> Excepciones personalizadas
+            ├── modelos/           --> Clases JPA: Cliente, Artículo, Pedido, etc.
+            └── vistas/            --> Consola: menús y entrada del usuario
+    └── resources/
+        └── META-INF/
+            └── persistence.xml    --> Configuración de JPA y Hibernate
+```
 
-## 📦 Base de datos
+---
 
-Nombre de la base de datos: `onlinestore`
+## 🔧 Configuración de base de datos
 
-Tablas:
+- Nombre de la base de datos: `onlinestore`
+- Motor: MySQL
+
+### Tablas esperadas:
+
 - `clientes` (email PK)
 - `articulos` (codigo_producto PK)
 - `pedidos` (num_pedido PK, FK email_cliente, FK codigo_producto)
 
-Procedimiento almacenado:
-```sql
-DELIMITER $$
+> Las tablas se crean automáticamente gracias a:
+```xml
+<property name="hibernate.hbm2ddl.auto" value="update"/>
+```
 
-CREATE PROCEDURE sp_insertar_pedido (
-  IN p_email_cliente VARCHAR(100),
-  IN p_codigo_producto VARCHAR(50),
-  IN p_cantidad INT,
-  IN p_fecha_hora DATETIME
-)
-BEGIN
-  INSERT INTO pedidos (email_cliente, codigo_producto, cantidad, fecha_hora)
-  VALUES (p_email_cliente, p_codigo_producto, p_cantidad, p_fecha_hora);
-END $$
+---
 
-DELIMITER ;
+## 🧪 `persistence.xml` (resumen)
 
+```xml
+<persistence-unit name="OnlineStorePU" transaction-type="RESOURCE_LOCAL">
+    ...
+    <properties>
+        <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/online_store_db"/>
+        <property name="jakarta.persistence.jdbc.user" value="root"/>
+        <property name="jakarta.persistence.jdbc.password" value="tu_contraseña"/>
+        <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+        
+        <!-- Dialecto recomendado -->
+        <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
 
+        <property name="hibernate.show_sql" value="true"/>
+        <property name="hibernate.format_sql" value="true"/>
+        <property name="hibernate.hbm2ddl.auto" value="update"/>
+    </properties>
+</persistence-unit>
+```
+
+---
+
+## ▶️ Cómo ejecutar el proyecto
+
+1. Clona el repositorio.
+2. Asegúrate de tener MySQL activo y con la base de datos `online_store_db` creada.
+3. Configura tu contraseña en `persistence.xml`.
+4. Ejecuta `Main.java` desde tu IDE favorito.
+5. ¡Explora el menú por consola!
+
+---
+
+## 📌 Notas
+
+- Se ha eliminado el uso de interfaces y factory para simplificar el proyecto.
+- Hibernate genera y actualiza las tablas automáticamente si no existen.
+- El código es limpio, comentado y diseñado para facilitar la comprensión de **POO + JPA**.
+
+---
+
+👩‍💻 **Desarrollado por el grupo Javinity – UOC FPDAW**

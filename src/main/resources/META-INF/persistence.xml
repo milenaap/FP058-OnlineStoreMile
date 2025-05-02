@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+
+    <persistence-unit name="OnlineStorePU" transaction-type="RESOURCE_LOCAL">
+        <class>org.javinity.modelos.Articulo</class>
+        <class>org.javinity.modelos.Cliente</class>
+        <class>org.javinity.modelos.ClienteEstandar</class>
+        <class>org.javinity.modelos.ClientePremium</class>
+        <class>org.javinity.modelos.Pedido</class>
+
+        <properties>
+            <!-- Configuración de conexión -->
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/online_store_db"/>
+            <property name="jakarta.persistence.jdbc.user" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value="123456"/>
+            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+
+            <!-- Dialecto de Hibernate -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+
+            <!-- Mostrar las consultas SQL en consola -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+
+            <!-- Crear automáticamente las tablas si no existen -->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+

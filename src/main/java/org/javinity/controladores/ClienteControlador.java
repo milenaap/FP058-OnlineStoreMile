@@ -1,6 +1,6 @@
 package org.javinity.controladores;
 
-import org.javinity.dao.interfaces.ClienteDAO;
+import org.javinity.dao.ClienteDAOImpl;
 import org.javinity.excepciones.ElementoNoEncontradoException;
 import org.javinity.modelos.Cliente;
 
@@ -8,17 +8,19 @@ import java.util.Collection;
 
 /**
  * Controlador encargado de gestionar la lógica de negocio relacionada con los clientes.
- * Funciona como intermediario entre la vista y el acceso a base de datos mediante DAO.
+ * Se comunica directamente con la clase DAO concreta sin usar interfaz.
+ * Forma parte de la capa de controlador en el patrón MVC.
  */
 public class ClienteControlador {
-    private final ClienteDAO clienteDAO;
+
+    private final ClienteDAOImpl clienteDAO;
 
     /**
-     * Constructor que recibe el DAO para acceder a los datos de clientes.
+     * Constructor que recibe el DAO concreto para gestionar los datos de clientes.
      *
-     * @param clienteDAO DAO concreto que gestiona la persistencia.
+     * @param clienteDAO Implementación concreta de ClienteDAO.
      */
-    public ClienteControlador(ClienteDAO clienteDAO) {
+    public ClienteControlador(ClienteDAOImpl clienteDAO) {
         this.clienteDAO = clienteDAO;
     }
 

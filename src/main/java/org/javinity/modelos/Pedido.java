@@ -1,5 +1,7 @@
 package org.javinity.modelos;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -13,13 +15,33 @@ import java.time.format.DateTimeFormatter;
  *
  * @author Javinity
  */
+@Entity
+@Table(name = "pedidos")
 public class Pedido {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int numPedido; // Identificador único del pedido (PK)
+
+    @ManyToOne
+    @JoinColumn(name = "email_cliente", referencedColumnName = "email", nullable = false)
     private Cliente cliente; // Cliente que realiza el pedido
+
+    @ManyToOne
+    @JoinColumn(name = "codigo_producto", referencedColumnName = "codigo_producto", nullable = false)
     private Articulo articulo; // Artículo solicitado
+
+    @Column(nullable = false)
     private int cantidad; // Número de unidades pedidas
+
+    @Column(name = "fecha_hora", nullable = false)
     private LocalDateTime fechaHoraPedido; // Fecha y hora en que se realiza el pedido
+
+
+
+
+    // Constructor vacío requerido por JPA
+    public Pedido(){}
 
     /**
      * Constructor para insertar un nuevo pedido (sin número aún asignado).

@@ -1,39 +1,46 @@
 package org.javinity.modelos;
 
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Clase abstracta que representa un cliente general de la tienda online.
- * Incluye los datos comunes a todos los tipos de cliente.
- * Contiene una lista de pedidos realizados por el cliente.
+ * Clase abstracta que representa un cliente general.
+ * Es la clase padre para ClienteEstandar y ClientePremium.
  *
  * @author Javinity
  */
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "clientes")
 public abstract class Cliente {
 
+    @Id
+    @Column(name = "email")
     private String email;
+
     private String nombre;
     private String domicilio;
     private String nif;
-    private ArrayList<Pedido> pedidos;
+    // Mapeo de pedidos
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pedido> pedidos = new ArrayList<>();
+
+    // Constructor vacío requerido por JPA
+    public Cliente(){}
 
     public Cliente(String email, String nombre, String domicilio, String nif) {
         this.email = email;
         this.nombre = nombre;
         this.domicilio = domicilio;
         this.nif = nif;
-        this.pedidos = new ArrayList<>();
+
     }
 
     public Cliente(String email) {
         this.email = email;
-        this.nombre = "";
-        this.domicilio = "";
-        this.nif = "";
     }
-
-
-
 
     public String getEmail() {
         return email;
@@ -65,6 +72,14 @@ public abstract class Cliente {
 
     public void setNif(String nif) {
         this.nif = nif;
+    }
+
+    public List<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(List<Pedido> pedidos) {
+        this.pedidos = pedidos;
     }
 
     @Override

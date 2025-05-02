@@ -1,6 +1,6 @@
 package org.javinity.controladores;
 
-import org.javinity.dao.interfaces.ArticuloDAO;
+import org.javinity.dao.ArticuloDAOImpl;
 import org.javinity.excepciones.ElementoNoEncontradoException;
 import org.javinity.modelos.Articulo;
 
@@ -8,18 +8,19 @@ import java.util.List;
 
 /**
  * Controlador encargado de gestionar la lógica de negocio relacionada con los artículos.
- * Se comunica con la capa DAO para acceder a los datos y con la vista para responder a acciones del usuario.
+ * Se comunica directamente con la clase DAO concreta sin usar interfaz.
+ * Forma parte del patrón MVC (capa controlador).
  */
 public class ArticuloControlador {
 
-    private final ArticuloDAO articuloDAO;
+    private final ArticuloDAOImpl articuloDAO;
 
     /**
      * Constructor del controlador.
      *
-     * @param articuloDAO Objeto DAO que permite la persistencia de artículos.
+     * @param articuloDAO Objeto DAO concreto para la persistencia de artículos.
      */
-    public ArticuloControlador(ArticuloDAO articuloDAO) {
+    public ArticuloControlador(ArticuloDAOImpl articuloDAO) {
         this.articuloDAO = articuloDAO;
     }
 
