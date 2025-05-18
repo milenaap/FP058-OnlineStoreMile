@@ -1,5 +1,10 @@
+/**
+ Vista JavaFX encargada de la gestión de clientes.
+ Permite agregar, mostrar y eliminar clientes desde una interfaz gráfica.
+ Utiliza el controlador ClienteControlador para la lógica de negocio.
+ Forma parte de la capa de Vista del patrón MVC.
+ */
 package org.javinity.vistas;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -16,10 +21,17 @@ import org.javinity.modelos.ClientePremium;
 public class ClienteVista {
     private final ClienteControlador clienteControlador;
 
+    /**
+     * Constructor que recibe el controlador de clientes.
+     * @param clienteControlador controlador que gestiona los datos de cliente
+     */
     public ClienteVista(ClienteControlador clienteControlador) {
         this.clienteControlador = clienteControlador;
     }
 
+    /**
+     * Muestra la ventana de gestión de clientes con formularios, tabla y barra lateral.
+     */
     public void mostrar() {
         Stage stage = new Stage();
         stage.setTitle("Gestión de Clientes");

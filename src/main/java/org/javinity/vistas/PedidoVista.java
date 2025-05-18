@@ -1,5 +1,10 @@
+/**
+ Vista JavaFX encargada de la gestión de pedidos.
+ Permite agregar, mostrar, filtrar y eliminar pedidos mediante una interfaz gráfica.
+ Utiliza los controladores de Pedido, Cliente y Artículo para gestionar la lógica de negocio.
+ Forma parte de la capa de Vista dentro del patrón de diseño MVC.
+ */
 package org.javinity.vistas;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -25,12 +30,22 @@ public class PedidoVista {
     private final ClienteControlador clienteControlador;
     private final ArticuloControlador articuloControlador;
 
+    /**
+     * Constructor que recibe los controladores de pedidos, clientes y artículos.
+     * @param pedidoControlador controlador de pedidos
+     * @param clienteControlador controlador de clientes
+     * @param articuloControlador controlador de artículos
+     */
     public PedidoVista(PedidoControlador pedidoControlador, ClienteControlador clienteControlador, ArticuloControlador articuloControlador) {
         this.pedidoControlador = pedidoControlador;
         this.clienteControlador = clienteControlador;
         this.articuloControlador = articuloControlador;
     }
 
+    /**
+     * Muestra la ventana principal para la gestión de pedidos.
+     * Incluye campos de entrada, tabla de resultados, barra lateral de acciones y validaciones.
+     */
     public void mostrar() {
         Stage stage = new Stage();
         stage.setTitle("Gestión de Pedidos");
@@ -229,6 +244,12 @@ public class PedidoVista {
         stage.show();
     }
 
+    /**
+     * Carga en la tabla los pedidos recibidos como lista.
+     * Limpia las columnas y las reemplaza con los datos actuales.
+     * @param pedidos lista de pedidos a mostrar
+     * @param tabla tabla visual donde se muestran los datos
+     */
     private void cargarPedidosEnTabla(java.util.List<Pedido> pedidos, TableView<Pedido> tabla) {
         tabla.getItems().clear();
         tabla.getColumns().clear();

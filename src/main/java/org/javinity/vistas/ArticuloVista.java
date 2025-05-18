@@ -1,5 +1,10 @@
+/**
+ Vista JavaFX encargada de la gestión de artículos.
+ Permite agregar, mostrar y eliminar artículos desde una interfaz gráfica.
+ Utiliza el controlador ArticuloControlador para gestionar la lógica de negocio.
+ Forma parte de la capa de Vista del patrón MVC.
+ */
 package org.javinity.vistas;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -14,10 +19,17 @@ import org.javinity.modelos.Articulo;
 public class ArticuloVista {
     private final ArticuloControlador articuloControlador;
 
+    /**
+     * Constructor que recibe el controlador asociado a la vista.
+     * @param articuloControlador controlador de artículos
+     */
     public ArticuloVista(ArticuloControlador articuloControlador) {
         this.articuloControlador = articuloControlador;
     }
 
+    /**
+     * Metodo principal que muestra la ventana de gestión de artículos.
+     */
     public void mostrar() {
         Stage stage = new Stage();
         stage.setTitle("Gestión de Artículos");

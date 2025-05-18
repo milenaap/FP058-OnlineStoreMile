@@ -1,3 +1,11 @@
+/**
+ * Clase principal que representa el menú principal de la aplicación OnlineStore.
+ * Esta clase extiende Application de JavaFX e implementa el diseño del menú lateral,
+ * el contenido central con un logotipo, y los botones de navegación hacia las vistas de artículos,
+ * clientes y pedidos.
+ *
+ * Forma parte de la capa Vista dentro del patrón MVC.
+ */
 package org.javinity.vistas;
 
 import javafx.application.Application;
@@ -13,10 +21,17 @@ import javafx.stage.Stage;
 
 public class MenuPrincipal extends Application {
 
+    /** Instancias estáticas de las vistas principales de la aplicación */
     public static ArticuloVista articuloVista;
     public static ClienteVista clienteVista;
     public static PedidoVista pedidoVista;
 
+    /**
+     * Método principal que inicia la interfaz gráfica.
+     * Crea un menú lateral con botones de navegación y un contenido central con logotipo.
+     *
+     * @param primaryStage la ventana principal de JavaFX
+     */
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Online Store - Menú Principal");
@@ -61,12 +76,13 @@ public class MenuPrincipal extends Application {
         centerContent.setStyle("-fx-background-color: #f4f4f4;");
         centerContent.setPadding(new Insets(20));
 
-        //Logo
+        // Carga y muestra del logotipo
         Image logo = new Image(getClass().getResource("/images/logo.png").toExternalForm());
         ImageView logoView = new ImageView(logo);
         logoView.setFitWidth(100);  // puedes ajustar el tamaño si es muy grande
         logoView.setPreserveRatio(true);
 
+        // Icono de ventana
         primaryStage.getIcons().add(new Image(getClass().getResource("/images/icon.png").toExternalForm()));
 
         Label bienvenida = new Label("MENÚ PRINCIPAL");
@@ -84,6 +100,12 @@ public class MenuPrincipal extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Punto de entrada de la aplicación.
+     * Llama al método launch para iniciar JavaFX.
+     *
+     * @param args argumentos de línea de comandos
+     */
     public static void main(String[] args) {
         launch(args);
     }
