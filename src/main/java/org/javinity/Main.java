@@ -11,13 +11,9 @@ import org.javinity.dao.ClienteDAOImpl;
 import org.javinity.dao.PedidoDAOImpl;
 import org.javinity.vistas.ArticuloVista;
 import org.javinity.vistas.ClienteVista;
-import org.javinity.vistas.PedidoVista;
 import org.javinity.vistas.MenuPrincipal;
+import org.javinity.vistas.PedidoVista;
 
-/**
- * Clase principal del proyecto Online Store.
- * Encargada de lanzar la aplicación desde consola.
- */
 public class Main {
     public static void main(String[] args) {
 
@@ -25,24 +21,22 @@ public class Main {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("OnlineStorePU");
         EntityManager em = emf.createEntityManager();
 
-        // Obtener el DAO usando JPA
+        // Obtener DAO
         ArticuloDAOImpl articuloDAO = new ArticuloDAOImpl(em);
         ClienteDAOImpl clienteDAO = new ClienteDAOImpl(em);
         PedidoDAOImpl pedidoDAO = new PedidoDAOImpl(em);
 
-
-        // Inyectar DAO al controlador
+        // Controladores
         ArticuloControlador articuloControlador = new ArticuloControlador(articuloDAO);
         ClienteControlador clienteControlador = new ClienteControlador(clienteDAO);
         PedidoControlador pedidoControlador = new PedidoControlador(pedidoDAO);
 
-        // Instanciar vistas con sus respectivos controladores
-        ArticuloVista articuloVista = new ArticuloVista(articuloControlador);
-        ClienteVista clienteVista = new ClienteVista(clienteControlador);
-        PedidoVista pedidoVista = new PedidoVista(pedidoControlador, clienteControlador, articuloControlador);
+        // Vistas con controladores
+        MenuPrincipal.articuloVista = new ArticuloVista(articuloControlador);
+        MenuPrincipal.clienteVista = new ClienteVista(clienteControlador);
+        MenuPrincipal.pedidoVista = new PedidoVista(pedidoControlador, clienteControlador, articuloControlador);
 
-        // Lanzar menú principal
-        MenuPrincipal menu = new MenuPrincipal(articuloVista, clienteVista, pedidoVista);
-        menu.mostrar();
+        // Lanzar JavaFX
+        MenuPrincipal.main(args);
     }
 }

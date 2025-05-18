@@ -60,4 +60,9 @@ public class ClienteControlador {
     public Collection<Cliente> obtenerTodosLosClientes() {
         return clienteDAO.listar();
     }
+
+    public void eliminarCliente(Cliente cliente) {
+        clienteDAO.eliminar(cliente.getEmail()); // o clienteDAO.eliminar(cliente) si lo prefieres
+    }
+
 }

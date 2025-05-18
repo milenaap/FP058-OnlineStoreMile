@@ -1,0 +1,114 @@
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #f9f9f9;
+}
+
+.title {
+    -fx-font-size: 24px;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 10 0 20 0;
+    -fx-font-weight: bold;
+}
+
+.label {
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+}
+
+.text-field, .combo-box {
+    -fx-pref-width: 250px;
+    -fx-font-size: 14px;
+}
+
+.button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-padding: 6 15;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #dcdcdc;
+    -fx-border-radius: 4;
+}
+
+.table-column {
+    -fx-alignment: CENTER-LEFT;
+}
+
+.titled-pane {
+    -fx-font-size: 16px;
+    -fx-text-fill: #2c3e50;
+}
+
+.nav-button {
+    -fx-background-color: #424242;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}
+
+.nav-button:hover {
+    -fx-background-color: #616161;
+}
+
+.side-button {
+    -fx-background-color: #0288D1;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 15;
+    -fx-background-radius: 5;
+    -fx-pref-width: 180px;
+    -fx-alignment: center-left;
+}
+
+.side-button:hover {
+    -fx-background-color: #03A9F4;
+}
+.sidebar-button {
+    -fx-background-color: #444;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+    -fx-alignment: center;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #616161;
+}
+
+.danger-button {
+    -fx-background-color: #d9534f;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 6 15;
+    -fx-background-radius: 6;
+}
+
+.danger-button:hover {
+    -fx-background-color: #c9302c;
+}
+
+.back-button {
+    -fx-background-color: #607D8B; /* Azul grisáceo */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}
+
+.back-button:hover {
+    -fx-background-color: #455A64;
+}
+
+
+

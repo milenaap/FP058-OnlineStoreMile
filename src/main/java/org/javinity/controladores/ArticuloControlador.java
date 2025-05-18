@@ -55,10 +55,9 @@ public class ArticuloControlador {
     /**
      * Elimina un artículo de la base de datos por su código.
      *
-     * @param codigo Código del artículo a eliminar.
      */
-    public void eliminarArticulo(String codigo) {
-        articuloDAO.eliminar(codigo);
+    public void eliminarArticulo(Articulo articulo) {
+        articuloDAO.eliminar(articulo.getCodigoProducto());
     }
 
     /**

@@ -1,182 +1,258 @@
 package org.javinity.vistas;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import org.javinity.controladores.ArticuloControlador;
 import org.javinity.controladores.ClienteControlador;
 import org.javinity.controladores.PedidoControlador;
 import org.javinity.excepciones.ElementoNoEncontradoException;
 import org.javinity.excepciones.PedidoNoEliminableException;
-import org.javinity.modelos.*;
+import org.javinity.modelos.Articulo;
+import org.javinity.modelos.Cliente;
+import org.javinity.modelos.Pedido;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Scanner;
 
-/**
- * Vista encargada de gestionar la interacción por consola relacionada con los pedidos.
- * Permite agregar, eliminar, mostrar y filtrar pedidos por estado o cliente.
- * Forma parte del patrón MVC (capa vista).
- *
- * @author Javinity
- */
 public class PedidoVista {
 
     private final PedidoControlador pedidoControlador;
     private final ClienteControlador clienteControlador;
     private final ArticuloControlador articuloControlador;
-    private final Scanner scanner;
 
-    public PedidoVista(PedidoControlador pedidoControlador,
-                       ClienteControlador clienteControlador,
-                       ArticuloControlador articuloControlador) {
+    public PedidoVista(PedidoControlador pedidoControlador, ClienteControlador clienteControlador, ArticuloControlador articuloControlador) {
         this.pedidoControlador = pedidoControlador;
         this.clienteControlador = clienteControlador;
         this.articuloControlador = articuloControlador;
-        this.scanner = new Scanner(System.in);
     }
 
-    /**
-     * Muestra el menú principal para la gestión de pedidos.
-     */
-    public void mostrarMenu() {
-        int opcion = 0;
-        do {
-            System.out.println("\nGestión de Pedidos");
-            System.out.println("1. Añadir Pedido");
-            System.out.println("2. Eliminar Pedido");
-            System.out.println("3. Mostrar TODOS los Pedidos");
-            System.out.println("4. Mostrar Pedidos Pendientes por Cliente");
-            System.out.println("5. Mostrar Pedidos Enviados por Cliente");
-            System.out.println("6. Volver al menú principal");
-            System.out.print("Selecciona una opción: ");
+    public void mostrar() {
+        Stage stage = new Stage();
+        stage.setTitle("Gestión de Pedidos");
+
+        VBox sidebar = new VBox(10);
+        sidebar.setPrefWidth(220);
+        sidebar.setPadding(new Insets(20));
+        sidebar.setStyle("-fx-background-color: #2e2e2e;");
+        sidebar.setAlignment(Pos.TOP_CENTER);
+
+        Label sidebarTitle = new Label("GESTIÓN DE PEDIDOS");
+        sidebarTitle.setStyle("-fx-text-fill: #888; -fx-font-size: 14px; -fx-font-weight: bold;");
+
+        Button btnNuevo = new Button("Añadir");
+        Button btnMostrar = new Button("Mostrar todos");
+        Button btnPendientes = new Button("Pendientes por cliente");
+        Button btnEnviados = new Button("Enviados por cliente");
+        Button btnVolver = new Button("Menú Principal");
+
+        Button btnAgregar = new Button("Guardar");
+        Button btnEliminar = new Button("Eliminar");
+
+        for (Button btn : new Button[]{btnNuevo, btnMostrar, btnPendientes, btnEnviados}) {
+            btn.getStyleClass().add("sidebar-button");
+            btn.setMaxWidth(Double.MAX_VALUE);
+            btn.setWrapText(true);
+        }
+
+        btnVolver.getStyleClass().add("back-button");
+        btnVolver.setMaxWidth(Double.MAX_VALUE);
+        btnAgregar.getStyleClass().add("button");
+        btnEliminar.getStyleClass().add("danger-button");
+
+        VBox formulario = new VBox(10);
+        formulario.setPadding(new Insets(20));
+
+        TextField txtEmail = new TextField();
+        txtEmail.setPromptText("Email del cliente");
+
+        TextField txtCodigo = new TextField();
+        txtCodigo.setPromptText("Código del artículo");
+
+        TextField txtCantidad = new TextField();
+        txtCantidad.setPromptText("Cantidad");
+
+        TextField txtNumPedido = new TextField();
+        txtNumPedido.setPromptText("Número del pedido (para eliminar)");
+
+        formulario.getChildren().addAll(txtEmail, txtCodigo, txtCantidad, txtNumPedido);
+
+        HBox formularioBotones = new HBox(10);
+        formularioBotones.setPadding(new Insets(0, 20, 10, 20));
+        formularioBotones.setAlignment(Pos.CENTER_RIGHT);
+        formularioBotones.getChildren().addAll(btnAgregar, btnEliminar);
+
+        TableView<Pedido> tabla = new TableView<>();
+        tabla.setPlaceholder(new Label("No hay pedidos registrados."));
+
+        cargarPedidosEnTabla(pedidoControlador.obtenerTodosLosPedidos(), tabla);
+
+        btnNuevo.setOnAction(e -> {
+            txtEmail.clear();
+            txtCodigo.clear();
+            txtCantidad.clear();
+            txtNumPedido.clear();
+            txtEmail.requestFocus();
+        });
+
+        btnAgregar.setOnAction(e -> {
+            try {
+                String email = txtEmail.getText();
+                String codigo = txtCodigo.getText();
+                int cantidad = Integer.parseInt(txtCantidad.getText());
+
+                Cliente cliente = clienteControlador.obtenerCliente(email);
+                Articulo articulo = articuloControlador.obtenerArticulo(codigo);
+
+                if (cliente == null || articulo == null) {
+                    throw new IllegalArgumentException("Cliente o artículo no encontrado.");
+                }
+
+                if (cantidad <= 0) {
+                    throw new IllegalArgumentException("La cantidad debe ser mayor a cero.");
+                }
+
+                Pedido pedido = new Pedido(cliente, articulo, cantidad, LocalDateTime.now());
+                pedidoControlador.agregarPedido(pedido);
+
+                new Alert(Alert.AlertType.INFORMATION, "Pedido agregado correctamente.").showAndWait();
+
+                txtEmail.clear();
+                txtCodigo.clear();
+                txtCantidad.clear();
+
+            } catch (NumberFormatException ex) {
+                new Alert(Alert.AlertType.ERROR, "La cantidad debe ser un número válido.").showAndWait();
+            } catch (Exception ex) {
+                new Alert(Alert.AlertType.ERROR, "Error: " + ex.getMessage()).showAndWait();
+            }
+        });
+
+        btnMostrar.setOnAction(e -> cargarPedidosEnTabla(pedidoControlador.obtenerTodosLosPedidos(), tabla));
+
+        btnEliminar.setOnAction(e -> {
+            String input = txtNumPedido.getText().trim();
+
+            if (input.isEmpty()) {
+                new Alert(Alert.AlertType.WARNING, "Debes ingresar un número de pedido.").showAndWait();
+                return;
+            }
 
             try {
-                opcion = Integer.parseInt(scanner.nextLine());
-                switch (opcion) {
-                    case 1 -> agregarPedido();
-                    case 2 -> eliminarPedido();
-                    case 3 -> mostrarTodosLosPedidos();
-                    case 4 -> mostrarPedidosPendientesPorCliente();
-                    case 5 -> mostrarPedidosEnviadosPorCliente();
-                    case 6 -> System.out.println("Volviendo al menú principal...");
-                    default -> System.out.println("Opción no válida.");
+                int num = Integer.parseInt(input);
+
+                Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmacion.setTitle("Confirmar eliminación");
+                confirmacion.setHeaderText(null);
+                confirmacion.setContentText("¿Estás seguro de que deseas eliminar este pedido?");
+
+                confirmacion.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+                        pedidoControlador.eliminarPedido(num);
+                        tabla.getItems().removeIf(p -> p.getNumPedido() == num);
+                        new Alert(Alert.AlertType.INFORMATION, "Pedido eliminado correctamente.").showAndWait();
+                        txtNumPedido.clear();
+                    }
+                });
+
+            } catch (ElementoNoEncontradoException | PedidoNoEliminableException ex) {
+                new Alert(Alert.AlertType.WARNING, ex.getMessage()).showAndWait();
+            } catch (NumberFormatException ex) {
+                new Alert(Alert.AlertType.ERROR, "El número de pedido debe ser un número entero.").showAndWait();
+            } catch (Exception ex) {
+                new Alert(Alert.AlertType.ERROR, "Error inesperado: " + ex.getMessage()).showAndWait();
+            }
+        });
+
+        btnPendientes.setOnAction(e -> {
+            String email = txtEmail.getText().trim();
+
+            if (email.isEmpty()) {
+                new Alert(Alert.AlertType.WARNING, "Debes ingresar el email del cliente.").showAndWait();
+                return;
+            }
+
+            try {
+                var pendientes = pedidoControlador.obtenerPedidosPendientesPorCliente(email);
+
+                if (pendientes.isEmpty()) {
+                    new Alert(Alert.AlertType.INFORMATION, "No hay pedidos pendientes para este cliente.").showAndWait();
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Error: Ingresa un número válido.");
+
+                cargarPedidosEnTabla(pendientes, tabla);
+
+            } catch (Exception ex) {
+                new Alert(Alert.AlertType.ERROR, "Error al filtrar pedidos pendientes: " + ex.getMessage()).showAndWait();
             }
-        } while (opcion != 6);
-    }
+        });
 
-    /**
-     * Permite agregar un nuevo pedido y registrar al cliente si no existe.
-     */
-    private void agregarPedido() {
-        try {
-            System.out.print("Email del cliente: ");
-            String email = scanner.nextLine();
-            Cliente cliente = clienteControlador.obtenerCliente(email);
-
-            if (cliente == null) {
-                System.out.println("Cliente no encontrado. Vamos a registrarlo.");
-                System.out.print("Nombre: ");
-                String nombre = scanner.nextLine();
-                System.out.print("Domicilio: ");
-                String domicilio = scanner.nextLine();
-                System.out.print("NIF: ");
-                String nif = scanner.nextLine();
-                System.out.print("¿Tipo de cliente (1. Estándar | 2. Premium)?: ");
-                int tipo = Integer.parseInt(scanner.nextLine());
-
-                cliente = (tipo == 2)
-                        ? new ClientePremium(email, nombre, domicilio, nif)
-                        : new ClienteEstandar(email, nombre, domicilio, nif);
-
-                clienteControlador.agregarCliente(cliente);
-                System.out.println("Cliente registrado correctamente.");
-            }
-
-            System.out.print("Código del artículo: ");
-            String codigo = scanner.nextLine();
-            Articulo articulo = articuloControlador.obtenerArticulo(codigo);
-
-            if (articulo == null) {
-                System.out.println("Artículo no encontrado. No se puede crear el pedido.");
+        btnEnviados.setOnAction(e -> {
+            String email = txtEmail.getText();
+            if (email.isEmpty()) {
+                new Alert(Alert.AlertType.WARNING, "Debes ingresar el email del cliente.").showAndWait();
                 return;
             }
 
-            System.out.print("Cantidad: ");
-            int cantidad = Integer.parseInt(scanner.nextLine());
-            if (cantidad <= 0) {
-                System.out.println("La cantidad debe ser mayor que cero.");
-                return;
+            try {
+                var enviados = pedidoControlador.obtenerPedidosEnviadosPorCliente(email);
+
+                if (enviados.isEmpty()) {
+                    new Alert(Alert.AlertType.INFORMATION, "No hay pedidos enviados para este cliente.").showAndWait();
+                }
+
+                cargarPedidosEnTabla(enviados, tabla);
+
+            } catch (Exception ex) {
+                new Alert(Alert.AlertType.ERROR, "Error al filtrar pedidos enviados: " + ex.getMessage()).showAndWait();
             }
+        });
 
-            Pedido nuevoPedido = new Pedido(0, cliente, articulo, cantidad, LocalDateTime.now());
-            pedidoControlador.agregarPedido(nuevoPedido);
-            System.out.println("Pedido agregado correctamente.");
-        } catch (Exception e) {
-            System.out.println("Error al agregar el pedido: " + e.getMessage());
-        }
+        btnVolver.setOnAction(e -> stage.close());
+
+        sidebar.getChildren().addAll(sidebarTitle, btnNuevo, btnMostrar, btnPendientes, btnEnviados, btnVolver);
+
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(20));
+        content.getChildren().addAll(formulario, formularioBotones, tabla);
+
+        BorderPane root = new BorderPane();
+        root.setLeft(sidebar);
+        root.setCenter(content);
+
+        Scene scene = new Scene(root, 900, 600);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+        stage.setScene(scene);
+        stage.show();
     }
 
-    /**
-     * Elimina un pedido si cumple la condición de no haber sido enviado.
-     */
-    private void eliminarPedido() {
-        try {
-            System.out.print("Número del pedido a eliminar: ");
-            int numPedido = Integer.parseInt(scanner.nextLine());
-            pedidoControlador.eliminarPedido(numPedido);
-            System.out.println("Pedido eliminado correctamente.");
-        } catch (ElementoNoEncontradoException | PedidoNoEliminableException e) {
-            System.out.println(e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Error inesperado: " + e.getMessage());
-        }
+    private void cargarPedidosEnTabla(java.util.List<Pedido> pedidos, TableView<Pedido> tabla) {
+        tabla.getItems().clear();
+        tabla.getColumns().clear();
+
+        ObservableList<Pedido> datos = FXCollections.observableArrayList(pedidos);
+
+        TableColumn<Pedido, String> colNum = new TableColumn<>("Pedido #");
+        colNum.setCellValueFactory(p -> new javafx.beans.property.SimpleStringProperty(String.valueOf(p.getValue().getNumPedido())));
+
+        TableColumn<Pedido, String> colCliente = new TableColumn<>("Cliente");
+        colCliente.setCellValueFactory(p -> new javafx.beans.property.SimpleStringProperty(p.getValue().getCliente().getNombre()));
+
+        TableColumn<Pedido, String> colArticulo = new TableColumn<>("Artículo");
+        colArticulo.setCellValueFactory(p -> new javafx.beans.property.SimpleStringProperty(p.getValue().getArticulo().getDescripcion()));
+
+        TableColumn<Pedido, String> colCantidad = new TableColumn<>("Cantidad");
+        colCantidad.setCellValueFactory(p -> new javafx.beans.property.SimpleStringProperty(String.valueOf(p.getValue().getCantidad())));
+
+        TableColumn<Pedido, String> colFecha = new TableColumn<>("Fecha");
+        colFecha.setCellValueFactory(p -> new javafx.beans.property.SimpleStringProperty(p.getValue().getFechaHoraPedido().toString()));
+
+        tabla.getColumns().addAll(colNum, colCliente, colArticulo, colCantidad, colFecha);
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabla.setItems(datos);
     }
 
-    /**
-     * Muestra todos los pedidos registrados.
-     */
-    private void mostrarTodosLosPedidos() {
-        System.out.println("Lista de TODOS los pedidos:");
-        List<Pedido> pedidos = pedidoControlador.obtenerTodosLosPedidos();
-
-        if (pedidos.isEmpty()) {
-            System.out.println("No hay pedidos registrados.");
-        } else {
-            pedidos.forEach(System.out::println);
-        }
-    }
-
-    /**
-     * Muestra los pedidos pendientes de envío filtrados por cliente.
-     */
-    private void mostrarPedidosPendientesPorCliente() {
-        System.out.print("Email del cliente: ");
-        String email = scanner.nextLine();
-        List<Pedido> pendientes = pedidoControlador.obtenerPedidosPendientesPorCliente(email);
-
-        if (pendientes.isEmpty()) {
-            System.out.println("No hay pedidos pendientes para este cliente.");
-        } else {
-            System.out.println("Pedidos pendientes:");
-            pendientes.forEach(System.out::println);
-        }
-    }
-
-    /**
-     * Muestra los pedidos ya enviados filtrados por cliente.
-     */
-    private void mostrarPedidosEnviadosPorCliente() {
-        System.out.print("Email del cliente: ");
-        String email = scanner.nextLine();
-        List<Pedido> enviados = pedidoControlador.obtenerPedidosEnviadosPorCliente(email);
-
-        if (enviados.isEmpty()) {
-            System.out.println("No hay pedidos enviados para este cliente.");
-        } else {
-            System.out.println("Pedidos enviados:");
-            enviados.forEach(System.out::println);
-        }
-    }
 }

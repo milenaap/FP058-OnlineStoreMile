@@ -1,65 +1,90 @@
 package org.javinity.vistas;
 
-import java.util.Scanner;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
-/**
- * Vista general que representa el menú principal del sistema.
- * Permite navegar entre las vistas de Artículos, Clientes y Pedidos.
- */
-public class MenuPrincipal {
+public class MenuPrincipal extends Application {
 
-    private final ArticuloVista articuloVista;
-    private final ClienteVista clienteVista;
-    private final PedidoVista pedidoVista;
-    private final Scanner scanner;
+    public static ArticuloVista articuloVista;
+    public static ClienteVista clienteVista;
+    public static PedidoVista pedidoVista;
 
-    /**
-     * Constructor que recibe las vistas necesarias para el sistema.
-     *
-     * @param articuloVista Vista de artículos
-     * @param clienteVista  Vista de clientes
-     * @param pedidoVista   Vista de pedidos
-     */
-    public MenuPrincipal(ArticuloVista articuloVista, ClienteVista clienteVista, PedidoVista pedidoVista) {
-        this.articuloVista = articuloVista;
-        this.clienteVista = clienteVista;
-        this.pedidoVista = pedidoVista;
-        this.scanner = new Scanner(System.in);
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Online Store - Menú Principal");
+
+        BorderPane root = new BorderPane();
+
+        // Sidebar (Menú lateral izquierdo)
+        VBox sidebar = new VBox(15);
+        sidebar.setPrefWidth(220);
+        sidebar.setPadding(new Insets(20));
+        sidebar.setStyle("-fx-background-color: #2e2e2e;");
+        sidebar.setAlignment(Pos.TOP_CENTER);
+
+        Label menuTitle = new Label("MENÚ");
+        menuTitle.getStyleClass().add("title");
+
+        Button btnArticulos = new Button("Gestión de Artículos");
+        Button btnClientes = new Button("Gestión de Clientes");
+        Button btnPedidos = new Button("Gestión de Pedidos");
+        Button btnSalir = new Button("Salir");
+
+        btnArticulos.getStyleClass().add("nav-button");
+        btnClientes.getStyleClass().add("nav-button");
+        btnPedidos.getStyleClass().add("nav-button");
+        btnSalir.getStyleClass().add("nav-button");
+
+        btnArticulos.setMaxWidth(Double.MAX_VALUE);
+        btnClientes.setMaxWidth(Double.MAX_VALUE);
+        btnPedidos.setMaxWidth(Double.MAX_VALUE);
+        btnSalir.setMaxWidth(Double.MAX_VALUE);
+
+        btnArticulos.setOnAction(e -> articuloVista.mostrar());
+        btnClientes.setOnAction(e -> clienteVista.mostrar());
+        btnPedidos.setOnAction(e -> pedidoVista.mostrar());
+        btnSalir.setOnAction(e -> primaryStage.close());
+
+        sidebar.getChildren().addAll(menuTitle, btnArticulos, btnClientes, btnPedidos, btnSalir);
+
+        // Centro visual
+        VBox centerContent = new VBox();
+        centerContent.setAlignment(Pos.CENTER);
+        centerContent.setStyle("-fx-background-color: #f4f4f4;");
+        centerContent.setPadding(new Insets(20));
+
+        //Logo
+        Image logo = new Image(getClass().getResource("/images/logo.png").toExternalForm());
+        ImageView logoView = new ImageView(logo);
+        logoView.setFitWidth(100);  // puedes ajustar el tamaño si es muy grande
+        logoView.setPreserveRatio(true);
+
+        primaryStage.getIcons().add(new Image(getClass().getResource("/images/icon.png").toExternalForm()));
+
+        Label bienvenida = new Label("MENÚ PRINCIPAL");
+        bienvenida.getStyleClass().add("title");
+
+        centerContent.getChildren().addAll(logoView, bienvenida);
+
+        root.setLeft(sidebar);
+        root.setCenter(centerContent);
+
+        Scene scene = new Scene(root, 700, 450);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
-    /**
-     * Muestra el menú principal y permite seleccionar cada módulo del sistema.
-     */
-    public void mostrar() {
-        int opcion;
-        do {
-            System.out.println("\n============================================");
-            System.out.println("|         ONLINE STORE - MENÚ PRINCIPAL     |");
-            System.out.println("============================================");
-            System.out.println("| 1. Gestión de Artículos                   |");
-            System.out.println("| 2. Gestión de Clientes                    |");
-            System.out.println("| 3. Gestión de Pedidos                     |");
-            System.out.println("| 4. Salir                                  |");
-            System.out.println("============================================");
-            System.out.print("Selecciona una opción: ");
-
-            while (!scanner.hasNextInt()) {
-                System.out.println("Entrada inválida. Ingresa un número.");
-                scanner.next(); // descarta entrada incorrecta
-            }
-
-            opcion = scanner.nextInt();
-            scanner.nextLine(); // limpia el buffer
-
-            switch (opcion) {
-                case 1 -> articuloVista.mostrarMenu();
-                case 2 -> clienteVista.mostrarMenu();
-                case 3 -> pedidoVista.mostrarMenu();
-                case 4 -> System.out.println("Cerrando aplicación. ¡Hasta luego!");
-                default -> System.out.println("Opción no válida.");
-            }
-
-        } while (opcion != 4);
+    public static void main(String[] args) {
+        launch(args);
     }
 }
-
