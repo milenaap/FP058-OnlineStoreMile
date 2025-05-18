@@ -1,78 +1,106 @@
-# 🛍️ Javinity - OnlineStore
 
-**Javinity** es una aplicación de consola desarrollada en Java que permite gestionar artículos, clientes (estándar y premium) y pedidos. Está estructurada siguiendo el patrón de diseño **MVC**, con persistencia de datos implementada mediante **JPA** (Hibernate) y **MySQL**.
+# 🛒 OnlineStore - Javinity (JavaFX + JPA + Hibernate)
 
----
-
-## 📌 Funcionalidades
-
-- Añadir y mostrar artículos.
-- Registrar clientes estándar o premium con herencia JPA.
-- Crear y eliminar pedidos (solo si no han sido enviados).
-- Filtrar pedidos pendientes y enviados por cliente.
-- Registro automático de cliente si no existe al crear pedido.
-- Lógica de negocio validada desde los controladores.
-- Mensajes claros y validaciones por consola.
-- Persistencia sin escribir SQL manual gracias a Hibernate.
+Este proyecto es una aplicación de escritorio desarrollada en Java utilizando **JavaFX** como interfaz gráfica. Permite registrar y administrar **clientes**, **artículos** y **pedidos**, con persistencia en base de datos utilizando **JPA (Jakarta Persistence API)** e implementación con **Hibernate ORM**.
 
 ---
 
-## 📁 Estructura del Proyecto
+## ✅ Características implementadas
 
-- `modelos/` → Entidades JPA: `Cliente`, `Articulo`, `Pedido`, etc.
-- `controladores/` → Lógica de negocio para cada entidad.
-- `vistas/` → Menús de interacción por consola.
-- `excepciones/` → Excepciones personalizadas como `ElementoNoEncontradoException`.
-- `dao/implementaciones/` → DAOs implementados usando `EntityManager` (JPA).
-- `Main.java` → Clase principal que arranca el menú de la aplicación.
-
----
-
-## ▶️ Cómo ejecutar
-
-1. Asegúrate de tener MySQL activo con una base de datos `online_store_db`.
-2. Configura el `persistence.xml` (si aplica) o asegúrate de que `hibernate.cfg.xml` tenga los datos correctos.
-3. Abre el proyecto en IntelliJ u otro IDE.
-4. Ejecuta la clase `Main.java`.
-5. Usa el menú para navegar entre artículos, clientes y pedidos.
-
----
-
-## 🎯 Tecnologías
-
-- ✅ Java 23 (OpenJDK)
-- ✅ Hibernate ORM (JPA)
-- ✅ MySQL
-- ✅ Jakarta Persistence API
-- ✅ JUnit 5 (para pruebas unitarias)
-- ✅ Patrón MVC
+- Interfaz gráfica moderna con **JavaFX**
+- Persistencia de datos en base de datos **MySQL** mediante **JPA + Hibernate**
+- CRUD completo para:
+    - **Artículos**
+    - **Clientes**
+    - **Pedidos**
+- Gestión de pedidos:
+    - Añadir pedido
+    - Eliminar pedido (con validación de estado)
+    - Mostrar todos los pedidos
+    - Filtrar por pedidos pendientes o enviados por cliente
+- Manejo de excepciones personalizadas:
+    - `ElementoNoEncontradoException`
+    - `PedidoNoEliminableException`
+- Navegación entre vistas desde un **menú principal con logo**
+- Estilo visual uniforme mediante archivo `styles.css`
+- Icono personalizado para la aplicación
 
 ---
 
-## 🛠️ Diseño e implementación
+## 🧱 Tecnologías utilizadas
 
-- 🧩 **JPA + Hibernate**: Los modelos son entidades JPA con anotaciones `@Entity`, `@Id`, `@ManyToOne`, etc.
-- 🧬 **Herencia JPA**: `Cliente` es abstracta; `ClientePremium` y `ClienteEstandar` heredan y se persisten en tablas separadas.
-- 🔄 **Eliminación controlada**: Los pedidos solo pueden eliminarse si no han sido enviados, validado con `LocalDateTime`.
-- 🧪 **JUnit 5**: Se crearon tests para comprobar la correcta persistencia y lógica de negocio.
-
----
-
-## ✅ Pruebas realizadas
-
-- ✔️ Agregar artículos y clientes desde consola → Confirmado con consultas en MySQL.
-- ✔️ Registro automático de cliente al crear pedido → Valida herencia y persistencia.
-- ✔️ Eliminación restringida de pedidos enviados → Dispara correctamente `PedidoNoEliminableException`.
-- ✔️ Uso de `EntityManager` en DAOs → Sin SQL manual, todo mediante JPA.
+| Herramienta         | Versión    |
+|---------------------|------------|
+| Java                | 23         |
+| JavaFX              | 21         |
+| Hibernate ORM       | 6.4.4.Final|
+| Jakarta Persistence | 3.1.0      |
+| MySQL Connector/J   | 8.0.33     |
+| IntelliJ IDEA       | (recomendado) |
 
 ---
 
-## 👨‍🎓 Proyecto académico
+## 🖼️ Interfaz de usuario
 
-Este proyecto ha sido desarrollado como entrega final para la asignatura **Programación Orientada a Objetos con Base de Datos**, dentro del ciclo formativo de **Desarrollo de Aplicaciones Web**. La evolución del código ha permitido incorporar buenas prácticas y migrar de JDBC a JPA.
+- Se ha creado una interfaz limpia y organizada utilizando `BorderPane`, `VBox` y `TableView`.
+- Las vistas disponibles son:
+    - `Menú Principal`
+    - `Gestión de Artículos`
+    - `Gestión de Clientes`
+    - `Gestión de Pedidos`
+- Cada módulo cuenta con un sidebar y formulario adaptado con botones funcionales.
 
 ---
 
-## 🌐 Repositorio
+## 🗂 Estructura del proyecto
 
-🔗 GitHub: [https://github.com/milenaap/FP058-OnlineStoreMile](https://github.com/milenaap/FP058-OnlineStoreMile)
+```
+src/
+└── main/
+    └── java/
+        └── org/javinity/
+            ├── controladores/     --> Lógica de negocio
+            ├── dao/               --> DAOs implementados con JPA
+            ├── excepciones/       --> Excepciones personalizadas
+            ├── modelos/           --> Entidades JPA
+            └── vistas/            --> Interfaces JavaFX (Menu, Articulos, Clientes, Pedidos)
+    └── resources/
+        ├── META-INF/persistence.xml  --> Configuración de JPA y Hibernate
+        ├── styles.css                --> Estilos visuales para JavaFX
+        └── images/logo.png          --> Logo de la tienda para el menú
+```
+
+---
+
+## 🔧 Configuración de base de datos
+
+- Nombre: `online_store_db`
+- Motor: MySQL
+- Creación automática de tablas activada (`hibernate.hbm2ddl.auto = update`)
+
+Tablas utilizadas:
+- `clientes`
+- `articulos`
+- `pedidos`
+
+---
+
+## ▶️ Cómo ejecutar el proyecto
+
+1. Clona el repositorio
+2. Asegúrate de tener MySQL activo y con la base de datos `online_store_db` creada
+3. Configura tu contraseña en `persistence.xml`
+4. Ejecuta `MenuPrincipal.java` para abrir la interfaz
+5. Interactúa con el sistema mediante la GUI JavaFX
+
+---
+
+## 📌 Notas importantes
+
+- Este proyecto es una evolución del producto 4 que funcionaba por consola. Ahora se utiliza interfaz gráfica con JavaFX para cumplir los requisitos del **Producto 5**.
+- Se ha mantenido el patrón MVC: solo se ha sustituido la capa de vista.
+- Las operaciones de guardado y eliminación requieren validaciones de entrada.
+
+---
+
+👩‍💻 **Desarrollado por el grupo Javinity – UOC FPDAW**
